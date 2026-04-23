@@ -1,0 +1,42 @@
+# Claude Code
+.claude/
+everything-claude-code/
+
+# Getting Started / draft docs
+Getting_Start*/
+getting_start*/
+GETTING_START*/
+*.draft.md
+*.draft.txt
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Spring Boot / Maven
+SnackOverflow/backend/target/
+
+# Next.js
+SnackOverflow/frontend/.next/
+SnackOverflow/frontend/out/
+
+# Spring Boot local profile
+SnackOverflow/backend/src/main/resources/application-local.yml
+
+# Logs
+*.log
+logs/
+
+# Temp
+tmp/
+temp/
+*.tmp
+*.bak
