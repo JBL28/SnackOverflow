@@ -80,10 +80,12 @@ class SnackPurchaseControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("과자 목록 조회 - 미인증 시 401")
-    void getAll_unauthenticated_returns401() throws Exception {
+    @DisplayName("과자 목록 조회 - 미인증 시에도 200 반환 (공개 엔드포인트)")
+    void getAll_unauthenticated_returns200() throws Exception {
         mockMvc.perform(get("/api/snack-purchases"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.content").isArray());
     }
 
     @Test
