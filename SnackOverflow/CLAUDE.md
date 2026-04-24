@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **상세 요구사항은 [`Getting_Start!.md`](./Getting_Start!.md)를 반드시 먼저 참고할 것.**  
+> 기능 명세, 권한 정책, 마이페이지, 관리자 페이지, 좋아요/댓글 세부 동작이 모두 거기에 정의되어 있음.
+
 ## Project Overview
 
 **SnackOverflow** — SSAFY 12반 간식 선호 조사 및 추천 플랫폼.  

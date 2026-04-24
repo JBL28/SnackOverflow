@@ -52,6 +52,21 @@ export interface AdminUser {
   role: UserRole
 }
 
+
+export type TargetType = 'SNACK_PURCHASE' | 'RECOMMENDATION'
+
+export interface Comment {
+  id: string
+  content: string
+  authorNickname: string
+  authorId: string
+  parentId: string | null
+  targetType: TargetType
+  targetId: string
+  likes: number
+  dislikes: number
+  createdAt: string
+}
 export interface ApiResponse<T> {
   success: boolean
   data: T | null

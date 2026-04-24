@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/snack-purchases", "/api/snack-purchases/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/snack-recommendations", "/api/snack-recommendations/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/comments").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

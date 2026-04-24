@@ -1,17 +1,20 @@
 ﻿import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { serverApi } from '@/lib/api/server'
-import { getAccessToken } from '@/lib/auth-cookie'
+import { getCommentsAction } from '@/actions/comments'
 import type { ApiResponse, SnackRecommendation } from '@/lib/types'
 import RecommendationActions from '@/components/recommendation/RecommendationActions'
+import CommentSection from '@/components/comment/CommentSection'
 
 export default async function RecommendationDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
+
   const res = await serverApi.get<ApiResponse<SnackRecommendation>>(
-    `/api/snack-recommendations/${params.id}`,
+    `/api/snack-recommendations/${id}`,
   )
   const rec = res.data.data
   if (!rec) redirect('/recommendations')
@@ -20,6 +23,8 @@ export default async function RecommendationDetailPage({
   const raw = store.get('snack_user')?.value
   const me = raw ? JSON.parse(raw) : null
   const canEdit = me && (me.role === 'ADMIN' || me.id === rec.createdById)
+
+  const comments = await getCommentsAction('RECOMMENDATION', id)
 
   return (
     <div className="flex flex-col gap-6">
@@ -36,7 +41,7 @@ export default async function RecommendationDetailPage({
         </div>
       </div>
 
-      <p className="whitespace-pre-wrap text-zinc-700 leading-relaxed">{rec.reason}</p>
+      <p className="whitespace-pre-wrap leading-relaxed text-zinc-700">{rec.reason}</p>
 
       {canEdit && (
         <RecommendationActions
@@ -45,6 +50,14 @@ export default async function RecommendationDetailPage({
           initialReason={rec.reason}
         />
       )}
+
+      <CommentSection
+        initialComments={comments}
+        targetType="RECOMMENDATION"
+        targetId={id}
+        currentUserId={me?.id ?? null}
+        isAdmin={me?.role === 'ADMIN'}
+      />
     </div>
   )
 }
