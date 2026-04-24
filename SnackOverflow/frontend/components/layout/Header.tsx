@@ -1,10 +1,18 @@
-'use client'
-import Link from 'next/link'
-import { useAuthStore } from '@/store/auth'
+﻿import Link from 'next/link'
+import { cookies } from 'next/headers'
 import { logoutAction } from '@/actions/auth'
+import type { UserRole } from '@/lib/types'
 
-export default function Header() {
-  const { user, isAuthenticated } = useAuthStore()
+interface UserCookie {
+  nickname: string
+  role: UserRole
+}
+
+export default async function Header() {
+  const store = await cookies()
+  const raw = store.get('snack_user')?.value
+  const user: UserCookie | null = raw ? (JSON.parse(raw) as UserCookie) : null
+  const isAuthenticated = !!store.get('snack_access')?.value
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/90 backdrop-blur-sm">
@@ -12,13 +20,17 @@ export default function Header() {
         <Link href="/" className="text-lg font-bold tracking-tight text-zinc-900">
           SnackOverflow
         </Link>
+        <nav className="hidden sm:flex items-center gap-4 text-sm">
+          <Link href="/" className="text-zinc-600 hover:text-zinc-900">구매한 과자</Link>
+          <Link href="/recommendations" className="text-zinc-600 hover:text-zinc-900">과자 추천</Link>
+        </nav>
         <div className="flex items-center gap-4 text-sm">
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <>
               <Link href="/profile" className="font-medium text-zinc-700 hover:text-zinc-900">
-                {user?.nickname}
+                {user.nickname}
               </Link>
-              {user?.role === 'ADMIN' && (
+              {user.role === 'ADMIN' && (
                 <Link href="/admin" className="font-medium text-orange-600 hover:text-orange-700">
                   관리자
                 </Link>

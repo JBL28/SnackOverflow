@@ -1,4 +1,4 @@
-package com.snackoverflow.config;
+﻿package com.snackoverflow.config;
 
 import com.snackoverflow.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/snack-purchases", "/api/snack-purchases/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/snack-recommendations", "/api/snack-recommendations/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -80,3 +81,4 @@ public class SecurityConfig {
         return source;
     }
 }
+

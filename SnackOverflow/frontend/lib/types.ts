@@ -1,4 +1,4 @@
-export type SnackStatus = 'DELIVERING' | 'IN_STOCK' | 'OUT_OF_STOCK'
+﻿export type SnackStatus = 'DELIVERING' | 'IN_STOCK' | 'OUT_OF_STOCK'
 export type UserRole = 'USER' | 'ADMIN'
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'DELETED'
 
@@ -32,6 +32,16 @@ export interface UserProfile {
   mustChangePassword: boolean
 }
 
+export interface SnackRecommendation {
+  id: string
+  name: string
+  reason: string
+  likes: number
+  dislikes: number
+  createdByNickname: string
+  createdById: string
+  createdAt: string
+}
 export interface AdminUser {
   id: string
   username: string
@@ -47,3 +57,4 @@ export interface ApiResponse<T> {
   data: T | null
   error: string | null
 }
+
