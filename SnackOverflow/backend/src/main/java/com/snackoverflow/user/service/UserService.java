@@ -1,6 +1,10 @@
-package com.snackoverflow.user.service;
+﻿package com.snackoverflow.user.service;
 
 import com.snackoverflow.auth.repository.RefreshTokenRepository;
+import com.snackoverflow.comment.dto.CommentResponse;
+import com.snackoverflow.comment.repository.CommentRepository;
+import com.snackoverflow.recommendation.dto.SnackRecommendationResponse;
+import com.snackoverflow.recommendation.repository.SnackRecommendationRepository;
 import com.snackoverflow.user.dto.AdminChangeStatusRequest;
 import com.snackoverflow.user.dto.AdminResetPasswordRequest;
 import com.snackoverflow.user.dto.AdminUserResponse;
@@ -17,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,6 +31,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SnackRecommendationRepository snackRecommendationRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public UserSummaryResponse getMyProfile(UUID userId) {
@@ -59,6 +66,24 @@ public class UserService {
         User user = findActiveUser(userId);
         user.updateStatus(UserStatus.DELETED);
         refreshTokenRepository.revokeAllByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SnackRecommendationResponse> getMyPosts(UUID userId) {
+        return snackRecommendationRepository
+                .findByCreatedByIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(SnackRecommendationResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentResponse> getMyComments(UUID userId) {
+        return commentRepository
+                .findByAuthorIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(CommentResponse::from)
+                .toList();
     }
 
     // ── 관리자 전용 ──────────────────────────────────────

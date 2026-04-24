@@ -1,8 +1,8 @@
-'use server'
+﻿'use server'
 import { redirect } from 'next/navigation'
 import { serverApi } from '@/lib/api/server'
 import { getAccessToken, clearTokens } from '@/lib/auth-cookie'
-import type { ApiResponse, AdminUser, PageResponse, UserStatus } from '@/lib/types'
+import type { ApiResponse, AdminUser, PageResponse, UserStatus, SnackRecommendation, Comment } from '@/lib/types'
 
 async function authHeaders() {
   const token = await getAccessToken()
@@ -42,6 +42,28 @@ export async function withdrawAction(): Promise<void> {
   }
   await clearTokens()
   redirect('/login')
+}
+
+export async function getMyPostsAction(): Promise<SnackRecommendation[]> {
+  try {
+    const res = await serverApi.get<ApiResponse<SnackRecommendation[]>>('/api/users/me/posts', {
+      headers: await authHeaders(),
+    })
+    return res.data.data ?? []
+  } catch {
+    return []
+  }
+}
+
+export async function getMyCommentsAction(): Promise<Comment[]> {
+  try {
+    const res = await serverApi.get<ApiResponse<Comment[]>>('/api/users/me/comments', {
+      headers: await authHeaders(),
+    })
+    return res.data.data ?? []
+  } catch {
+    return []
+  }
 }
 
 export async function adminGetUsersAction(

@@ -1,4 +1,4 @@
-package com.snackoverflow.user.controller;
+﻿package com.snackoverflow.user.controller;
 
 import com.snackoverflow.common.ApiResponse;
 import com.snackoverflow.user.dto.AdminChangeStatusRequest;
@@ -50,6 +50,16 @@ public class UserController {
         userService.withdraw(extractUserId(auth));
         clearRefreshCookie(response);
         return ResponseEntity.ok(ApiResponse.ok());
+    }
+
+    @GetMapping("/me/posts")
+    public ResponseEntity<ApiResponse<?>> getMyPosts(Authentication auth) {
+        return ResponseEntity.ok(ApiResponse.ok(userService.getMyPosts(extractUserId(auth))));
+    }
+
+    @GetMapping("/me/comments")
+    public ResponseEntity<ApiResponse<?>> getMyComments(Authentication auth) {
+        return ResponseEntity.ok(ApiResponse.ok(userService.getMyComments(extractUserId(auth))));
     }
 
     // ── 관리자 전용 ──────────────────────────────────────
