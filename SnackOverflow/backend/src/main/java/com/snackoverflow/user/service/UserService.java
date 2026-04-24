@@ -1,6 +1,9 @@
 package com.snackoverflow.user.service;
 
 import com.snackoverflow.auth.repository.RefreshTokenRepository;
+import com.snackoverflow.user.dto.AdminChangeStatusRequest;
+import com.snackoverflow.user.dto.AdminResetPasswordRequest;
+import com.snackoverflow.user.dto.AdminUserResponse;
 import com.snackoverflow.user.dto.ChangePasswordRequest;
 import com.snackoverflow.user.dto.UpdateNicknameRequest;
 import com.snackoverflow.user.dto.UserSummaryResponse;
@@ -8,6 +11,8 @@ import com.snackoverflow.user.entity.User;
 import com.snackoverflow.user.entity.UserStatus;
 import com.snackoverflow.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +58,29 @@ public class UserService {
     public void withdraw(UUID userId) {
         User user = findActiveUser(userId);
         user.updateStatus(UserStatus.DELETED);
+        refreshTokenRepository.revokeAllByUserId(userId);
+    }
+
+    // ── 관리자 전용 ──────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public Page<AdminUserResponse> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(AdminUserResponse::from);
+    }
+
+    @Transactional
+    public AdminUserResponse changeUserStatus(UUID userId, AdminChangeStatusRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        user.updateStatus(request.status());
+        return AdminUserResponse.from(user);
+    }
+
+    @Transactional
+    public void resetUserPassword(UUID userId, AdminResetPasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        user.updatePasswordHash(passwordEncoder.encode(request.newPassword()));
         refreshTokenRepository.revokeAllByUserId(userId);
     }
 

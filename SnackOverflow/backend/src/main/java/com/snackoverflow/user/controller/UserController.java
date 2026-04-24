@@ -1,6 +1,8 @@
 package com.snackoverflow.user.controller;
 
 import com.snackoverflow.common.ApiResponse;
+import com.snackoverflow.user.dto.AdminChangeStatusRequest;
+import com.snackoverflow.user.dto.AdminResetPasswordRequest;
 import com.snackoverflow.user.dto.ChangePasswordRequest;
 import com.snackoverflow.user.dto.UpdateNicknameRequest;
 import com.snackoverflow.user.service.UserService;
@@ -8,7 +10,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +49,35 @@ public class UserController {
                                                        HttpServletResponse response) {
         userService.withdraw(extractUserId(auth));
         clearRefreshCookie(response);
+        return ResponseEntity.ok(ApiResponse.ok());
+    }
+
+    // ── 관리자 전용 ──────────────────────────────────────
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<?>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        var pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(ApiResponse.ok(userService.getAllUsers(pageable)));
+    }
+
+    @PatchMapping("/admin/{userId}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<?>> changeUserStatus(
+            @PathVariable String userId,
+            @RequestBody @Valid AdminChangeStatusRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(
+                userService.changeUserStatus(java.util.UUID.fromString(userId), request)));
+    }
+
+    @PostMapping("/admin/{userId}/reset-password")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> resetUserPassword(
+            @PathVariable String userId,
+            @RequestBody @Valid AdminResetPasswordRequest request) {
+        userService.resetUserPassword(java.util.UUID.fromString(userId), request);
         return ResponseEntity.ok(ApiResponse.ok());
     }
 

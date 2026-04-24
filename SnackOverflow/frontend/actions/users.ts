@@ -2,6 +2,7 @@
 import { redirect } from 'next/navigation'
 import { serverApi } from '@/lib/api/server'
 import { getAccessToken, clearTokens } from '@/lib/auth-cookie'
+import type { ApiResponse, AdminUser, PageResponse, UserStatus } from '@/lib/types'
 
 async function authHeaders() {
   const token = await getAccessToken()
@@ -41,4 +42,50 @@ export async function withdrawAction(): Promise<void> {
   }
   await clearTokens()
   redirect('/login')
+}
+
+export async function adminGetUsersAction(
+  page = 0,
+): Promise<{ data?: PageResponse<AdminUser>; error?: string }> {
+  try {
+    const res = await serverApi.get<ApiResponse<PageResponse<AdminUser>>>(
+      `/api/users/admin?page=${page}&size=10`,
+      { headers: await authHeaders() },
+    )
+    return { data: res.data.data ?? undefined }
+  } catch {
+    return { error: '유저 목록을 불러오지 못했습니다.' }
+  }
+}
+
+export async function adminChangeUserStatusAction(
+  userId: string,
+  status: UserStatus,
+): Promise<{ error?: string }> {
+  try {
+    await serverApi.patch(
+      `/api/users/admin/${userId}/status`,
+      { status },
+      { headers: await authHeaders() },
+    )
+    return {}
+  } catch {
+    return { error: '상태 변경에 실패했습니다.' }
+  }
+}
+
+export async function adminResetPasswordAction(
+  userId: string,
+  newPassword: string,
+): Promise<{ error?: string }> {
+  try {
+    await serverApi.post(
+      `/api/users/admin/${userId}/reset-password`,
+      { newPassword },
+      { headers: await authHeaders() },
+    )
+    return {}
+  } catch {
+    return { error: '비밀번호 초기화에 실패했습니다.' }
+  }
 }

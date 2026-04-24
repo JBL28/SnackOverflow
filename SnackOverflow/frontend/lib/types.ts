@@ -32,6 +32,16 @@ export interface UserProfile {
   mustChangePassword: boolean
 }
 
+export interface AdminUser {
+  id: string
+  username: string
+  nickname: string
+  postCount: number
+  commentCount: number
+  status: UserStatus
+  role: UserRole
+}
+
 export interface ApiResponse<T> {
   success: boolean
   data: T | null
