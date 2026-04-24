@@ -65,4 +65,12 @@ public class Comment {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public void adjustLikes(int delta) {
+        this.likes = Math.max(0, this.likes + delta);
+    }
+
+    public void adjustDislikes(int delta) {
+        this.dislikes = Math.max(0, this.dislikes + delta);
+    }
 }

@@ -7,6 +7,7 @@ import StatusBadge from '@/components/snack/StatusBadge'
 import StatusUpdateButton from '@/components/snack/StatusUpdateButton'
 import AdminSnackActions from '@/components/admin/AdminSnackActions'
 import CommentSection from '@/components/comment/CommentSection'
+import ReactionButtons from '@/components/reaction/ReactionButtons'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -39,11 +40,17 @@ export default async function SnackDetailPage({ params }: PageProps) {
           <h1 className="text-xl font-bold text-zinc-900">{snack.name}</h1>
           <StatusBadge status={snack.status} />
         </div>
-        <div className="mt-4 flex gap-4 text-sm text-zinc-500">
-          <span>👍 {snack.likes}</span>
-          <span>👎 {snack.dislikes}</span>
-          <span>· 등록자: {snack.createdByNickname}</span>
+        <div className="mt-4">
+          <ReactionButtons
+            targetType="SNACK_PURCHASE"
+            targetId={snack.id}
+            initialLikes={snack.likes}
+            initialDislikes={snack.dislikes}
+            initialMyReaction={null}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
+        <p className="mt-2 text-sm text-zinc-400">등록자: {snack.createdByNickname}</p>
         {isAuthenticated && (
           <div className="mt-4 flex flex-wrap gap-2 border-t border-zinc-100 pt-4">
             <StatusUpdateButton id={snack.id} status={snack.status} />

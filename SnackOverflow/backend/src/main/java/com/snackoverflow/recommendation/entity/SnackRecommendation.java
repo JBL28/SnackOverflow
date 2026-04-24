@@ -59,4 +59,12 @@ public class SnackRecommendation {
         this.name = name;
         this.reason = reason;
     }
+
+    public void adjustLikes(int delta) {
+        this.likes = Math.max(0, this.likes + delta);
+    }
+
+    public void adjustDislikes(int delta) {
+        this.dislikes = Math.max(0, this.dislikes + delta);
+    }
 }

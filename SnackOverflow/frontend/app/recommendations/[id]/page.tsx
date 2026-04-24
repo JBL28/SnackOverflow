@@ -5,6 +5,7 @@ import { getCommentsAction } from '@/actions/comments'
 import type { ApiResponse, SnackRecommendation } from '@/lib/types'
 import RecommendationActions from '@/components/recommendation/RecommendationActions'
 import CommentSection from '@/components/comment/CommentSection'
+import ReactionButtons from '@/components/reaction/ReactionButtons'
 
 export default async function RecommendationDetailPage({
   params,
@@ -22,6 +23,7 @@ export default async function RecommendationDetailPage({
   const store = await cookies()
   const raw = store.get('snack_user')?.value
   const me = raw ? JSON.parse(raw) : null
+  const isAuthenticated = !!store.get('snack_access')?.value
   const canEdit = me && (me.role === 'ADMIN' || me.id === rec.createdById)
 
   const comments = await getCommentsAction('RECOMMENDATION', id)
@@ -35,10 +37,14 @@ export default async function RecommendationDetailPage({
             {rec.createdByNickname} · {new Date(rec.createdAt).toLocaleDateString('ko-KR')}
           </p>
         </div>
-        <div className="flex gap-2 text-sm text-zinc-500">
-          <span>👍 {rec.likes}</span>
-          <span>👎 {rec.dislikes}</span>
-        </div>
+        <ReactionButtons
+          targetType="RECOMMENDATION"
+          targetId={rec.id}
+          initialLikes={rec.likes}
+          initialDislikes={rec.dislikes}
+          initialMyReaction={null}
+          isAuthenticated={isAuthenticated}
+        />
       </div>
 
       <p className="whitespace-pre-wrap leading-relaxed text-zinc-700">{rec.reason}</p>

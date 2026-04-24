@@ -73,3 +73,11 @@ export interface ApiResponse<T> {
   error: string | null
 }
 
+export type ReactionType = 'LIKE' | 'DISLIKE'
+export type ReactionTargetType = 'SNACK_PURCHASE' | 'RECOMMENDATION' | 'COMMENT'
+
+export interface ToggleReactionResponse {
+  likes: number
+  dislikes: number
+  myReaction: ReactionType | null
+}
